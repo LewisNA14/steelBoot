@@ -5,9 +5,9 @@
  * @brief This file contains the Memory Addresses for FLASH and SRAM for the linker
  */
 
-_estack = ORIGIN(SRAM) + LENGTH(SRAM); /* Top of RAM */
-_min_heap_size  = 0x400;        /* 1KB heap */
-_min_stack_size = 0x800;        /* 2KB stack */
+_estack = ORIGIN(SRAM) + LENGTH(SRAM);  /* Top of RAM */
+_min_heap_size  = 0x200;                /* 0.5KB heap */
+_min_stack_size = 0x400;                /* 1KB stack */
 
 ENTRY(Reset_Handler)
 
@@ -21,11 +21,18 @@ ENTRY(Reset_Handler)
  /* Defining Ouput Sections */
 SECTIONS
 {
+    /* The startup code into "FLASH" ROM type Memory */
+    /* Vector Table */
+    .isr_vector : 
+    {
+        . = ALIGN(4);
+        KEEP(*(.isr_vector))    /* Find the attribute section from the C code */
+        . = ALIGN(4);
+    } > FLASH
+
     /* Executable Code */
     .text : ALIGN (4)
     {
-        /* Vector Table */
-        KEEP(*(.isr_vector))    /* Find the attribute section from the C code */
         *(.text*)               /* Program Code */
         *(.text)                /* All other code */
         *(.rodata*)             /* Read-only data */
@@ -33,21 +40,24 @@ SECTIONS
     } > FLASH
 
     /* Initialised Data */
+    PROVIDE (_DATA_START = LOADADDR (.data));
     .data : ALIGN(4)
     {
-        *(.data*)       
+        _DATA_START = .;
+        *(.data*)   
         . = ALIGN(4)
+        _DATA_END = .;  
     } > SRAM AT > FLASH
 
     /* Uninitialised Data */
     .bss : ALIGN (4)
     {
+        _BSS_START = .;
         *(.bss*)        
         . = ALIGN(4)
+        _BSS_END = .;
     } > SRAM
 }
-
-/* Input Section for Vector Table .vector0
 
 /* Main architecture is we want
 
@@ -59,4 +69,4 @@ In this instance FLASH holds the executable code for LED Blink
 Having a look SRAM just contains volatile memory so most of the key executables and variables will be held in
 FLASH. 
 
-Now i've included a vector table*/
+Now i've included a vector table and need to add some start and end symbols for the .data and .bss*/

@@ -34,18 +34,17 @@ SECTIONS
     .text : ALIGN (4)
     {
         *(.text*)               /* Program Code */
-        *(.text)                /* All other code */
         *(.rodata*)             /* Read-only data */
         . = ALIGN(4);           /* Aligns the data to be 4 bytes long */
     } > FLASH
 
     /* Initialised Data */
-    PROVIDE (_DATA_START = LOADADDR (.data));
+    _DATA_LOAD = LOADADDR(.data);
     .data : ALIGN(4)
     {
         _DATA_START = .;
         *(.data*)   
-        . = ALIGN(4)
+        . = ALIGN(4);
         _DATA_END = .;  
     } > SRAM AT > FLASH
 
@@ -54,7 +53,7 @@ SECTIONS
     {
         _BSS_START = .;
         *(.bss*)        
-        . = ALIGN(4)
+        . = ALIGN(4);
         _BSS_END = .;
     } > SRAM
 }
@@ -69,4 +68,7 @@ In this instance FLASH holds the executable code for LED Blink
 Having a look SRAM just contains volatile memory so most of the key executables and variables will be held in
 FLASH. 
 
-Now i've included a vector table and need to add some start and end symbols for the .data and .bss*/
+Now i've included a vector table and need to add some start and end symbols for the .data and .bss
+
+SRAM needs a VMA Address for 
+*/

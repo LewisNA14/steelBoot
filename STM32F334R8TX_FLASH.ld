@@ -58,17 +58,20 @@ SECTIONS
     } > SRAM
 }
 
-/* Main architecture is we want
+/* Main architecture:
+    Memory is split as follows:
+    Flash   - 64KB
+    SRAM    - 12KB
 
-Memory for FLASH - Loading the firmware onto the device
-Memory for the SRAM - the actual executable code for the device
+    All data is aligned and padded to 4 bytes long (32-bits) as the STM32 Nucleo F334R8 uses a 32-bit arm chip
 
-In this instance FLASH holds the executable code for LED Blink 
+    Flash Contains the following:
+    - isr vector Table
+    - .text     -> Program Code
+    - .rodata   -> Read-Only data (is immutable)
+    - .data     -> Initialised variables
 
-Having a look SRAM just contains volatile memory so most of the key executables and variables will be held in
-FLASH. 
-
-Now i've included a vector table and need to add some start and end symbols for the .data and .bss
-
-SRAM needs a VMA Address for 
+    SRAM Contains the following:
+    - .data     -> Intialised Variables
+    - .bss      -> Uninitialised Variables
 */

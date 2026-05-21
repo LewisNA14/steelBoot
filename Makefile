@@ -4,11 +4,11 @@
 # Variables
 CC 		= arm-none-eabi-gcc		# ARM Toolchain Compiler
 CCOPY   = arm-none-eabi-objcopy	# Toolchain for copying / converting
-CFLAGS 	= -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16	# Hardware peripheral flags
+CFLAGS 	= -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 	# Hardware peripheral / Compiler flags
 OBJ 	= main.o startup.o
 TARGET 	= firmware
 
-LDFLAGS = -T STM32F334R8TX_FLASH.ld -Wl,--gc-sections
+LDFLAGS = -T STM32F334R8TX_FLASH.ld -Wl,--gc-sections -nostartfiles
 
 
 # Default Rule:

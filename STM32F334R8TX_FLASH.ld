@@ -5,9 +5,9 @@
  * @brief This file contains the Memory Addresses for FLASH and SRAM for the linker
  */
 
-_estack = ORIGIN(SRAM) + LENGTH(SRAM);  /* Top of RAM */
-_min_heap_size  = 0x200;                /* 0.5KB heap */
-_min_stack_size = 0x400;                /* 1KB stack */
+_stack_ptr      = ORIGIN(SRAM) + LENGTH(SRAM);  /* Top of RAM */
+_min_heap_size  = 0x200;                        /* 0.5KB heap */
+_min_stack_size = 0x400;                        /* 1KB stack */
 
 ENTRY(Reset_Handler)
 

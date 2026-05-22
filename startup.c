@@ -7,33 +7,50 @@
 
 #include <stdint.h>
 
- /* External reference to the Stack Pointer, defined in your Linker Script */
+/* External reference to the Stack Pointer, defined in the Linker Script */
 extern uint32_t _stack_ptr;
 
-/* Prototype for the Reset Handler */
-void Reset_Handler(void);
+/* Defining the vector table is stored within the .isr_vector section rather
+   Than the default which is bss */
+int __attribute__((section(".isr_vector"))) = {
 
-/* The Vector Table */
-__attribute__((section(".isr_vector")))
-void (* const g_pfnVectors[])(void) = 
+}
+// Vector Table containing pointers to each relevant memory address
+void (*isr_vector_table[255]) = {
+    // Vector & Offset
+    initial_sp_val,                        /* Initial Stack Pointer */ 
+    Reset_Handler,                         /* Reset Handler */
+    NMI_Handler,                           /* NMI Handler */
+    HardFault_Handler,                     /* Hard Fault Handler */
+    MemManage_Handler,                     /* MPU Fault Handler */
+    BusFault_Handler,                      /* Bus Fault Handler*/
+    UsageFault_Handler,                    /* Usage Fault Handler */
+    0,                                      /* Reserved */
+    0,                                      /* Reserved */
+    0,                                      /* Reserved */
+    0,                                      /* Reserved */
+    SVC_Handler,                           /* SVC Handler */                   
+    0,                                      /* Reserved */
+    0,                                      /* Reserved */
+    PendSV_Handler,                        /* Pend SV Handler */
+    sysTick_Handler,                       /* SysTick Handler*/
+
+    /* Interrupts */
+    IRQ0_Hand,               /* Interrupt 0 */
+    IRQ1_Hand,               /* Interrupt 1 */
+    IRQ2_Hand,               /* Interrupt 4 */
+    IRQ3_Hand,               /* Interrupt 3 */
+}
+
+
+/* Reset Handler for reinitialising .data values from .text and wiping the .bss values */
+void Reset_Handler()
 {
-    (void (*)(void))(&_stack_ptr),  // 1. Initial Stack Pointer
-    Reset_Handler,                  // 2. Reset Handler (Vector 1)
-    // You can add more (NMI, HardFault, etc.) later. 
-    // For now, just these two are enough to satisfy the hardware.
-};
+    // Overwrite current .data values with ones copied from .text
 
-/* The Reset Handler: The entry point of your program */
-void Reset_Handler(void) 
-{
-    // 1. Copy .data section from Flash to RAM (if you have initialized variables)
-    // 2. Zero-fill the .bss section (if you have global variables)
-    // 3. Call main()
-    
-    // For now, just jump to main
-    extern int main(void);
-    main();
 
-    // Catch if main ever returns
-    while(1);
+    // Refresh / Wipe the values at .bss
+
+    // Point / Call main function
+    main()
 }

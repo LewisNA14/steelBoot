@@ -25,7 +25,7 @@ SECTIONS
     /* Vector Table */
     .isr_vector : 
     {
-        . = ALIGN(4);
+        . = ALIGN(1024);
         KEEP(*(.isr_vector))    /* Find the attribute section from the C code */
         . = ALIGN(4);
     } > FLASH

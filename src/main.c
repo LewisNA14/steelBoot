@@ -5,11 +5,10 @@
  * 
  */
 
-void main()
+__attribute__((noreturn)) void main() 
 {
     while(1)
     {
         // Loops forever for testing purposes
     }
-    __attribute__((noreturn));
 }

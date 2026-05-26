@@ -26,6 +26,12 @@ $(TARGET).hex: $(TARGET).elf
 %.o: src/%.c 
 	$(CC) $(CFLAGS) -c $< -o $@ 
 
+check-sections:
+	arm-none-eabi-readelf -S $(TARGET).elf
+
+check-program:
+	arm-none-eabi-readelf -l $(TARGET).elf
+
 clean:
 	rm -f $(OBJ) $(TARGET).elf $(TARGET).hex
 

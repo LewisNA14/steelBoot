@@ -5,16 +5,51 @@
  * 
  */
 
-volatile int x = 5;      // Global, volatile, initialised
-volatile int y = 6;      // Global, volatile, initialised
+#include <stdint.h>
+#include "stm32f334x8.h"
+
+/*========================================================================================*/
+/**
+ * @section Pin Registers
+ */
+// #define BUTTON1
+
+#define volatile LED2 0x40020000
+
+/*========================================================================================*/
+
+typedef enum{
+    LED_ON,
+    LED_OFF
+} led_status_t;
+
+
+// TODO: LED Blink function
+void LED_Blink ()
+{
+    // Toggle the LED GPIO from OFF to ON
+    LEd
+
+    // Toggle the LED Based on the SysTick Timer
+}
+
+// TODO: UART / USB Serial Connection Test Function
+void serial_conn()
+{
+    /* Using the ST-Link Digital Port tests communication between the
+       Dev Kit and the PC */
+}
 
 __attribute__((noreturn)) void main() 
 {
     while(1) 
     {
-        x++;             // Compiler must respect 'x' because it's volatile
+        // LED_Blink();
+        if (LED_ON)
+        {
+
+        }
+
+        // serial_conn();
     }
 }
-
-/* This is for testing as it ensures that the .data end point address is moved due to the compiler having
-   to respect the volatile variables. */

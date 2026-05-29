@@ -45,7 +45,7 @@ void BusFault_Handler(void)     __attribute__((weak, alias("Default_Handler")));
 void UsageFault_Handler(void)   __attribute__((weak, alias("Default_Handler")));
 void SVC_Handler(void)          __attribute__((weak, alias("Default_Handler")));
 void PendSV_Handler(void)       __attribute__((weak, alias("Default_Handler")));
-void sysTick_Handler(void)      __attribute__((weak, alias("Default_Handler")));
+void SysTick_Handler(void)      __attribute__((weak, alias("Default_Handler")));
 
 /* Default Handler */
 void Default_Handler(void); 
@@ -84,7 +84,7 @@ const vector_table_t vector_table[255] = {
     0,                                                  /* Reserved */
     0,                                                  /* Reserved */
     PendSV_Handler,                                     /* Pend SV Handler */
-    sysTick_Handler,                                    /* SysTick Handler*/
+    SysTick_Handler,                                    /* SysTick Handler*/
 
     /* Interrupts */
     IRQ0_Handler,               /* Interrupt 0 */
@@ -94,6 +94,11 @@ const vector_table_t vector_table[255] = {
 
     // The number of interrupts goes up to IRQ 239 However I don't think we actually need that many
 };
+
+void SysTick_Handler()
+{
+    // TODO: write something for handling the Serial Clock / Timer provided by the STM board
+}
 
 void Default_Handler()
 {

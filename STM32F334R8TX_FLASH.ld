@@ -14,8 +14,8 @@ ENTRY(Reset_Handler)
 /* Memory Areas */
  MEMORY
  {
-    FLASH(rx)   : ORIGIN   = 0x08000000,    LENGTH = 64K
-    SRAM(rwx)   : ORIGIN   = 0x20000000,    LENGTH = 12K
+    FLASH   (rx)    : ORIGIN   = 0x08000000,    LENGTH = 64K
+    SRAM    (rwx)   : ORIGIN   = 0x20000000,    LENGTH = 12K
  }
 
  /* Defining Ouput Sections */
@@ -25,7 +25,6 @@ SECTIONS
     /* Vector Table */
     .isr_vector : 
     {
-        . = ALIGN(1024);
         KEEP(*(.isr_vector))    /* Find the attribute section from the C code */
         . = ALIGN(4);
     } > FLASH
@@ -46,7 +45,7 @@ SECTIONS
         *(.data*)   
         . = ALIGN(4);
         _DATA_END = .;  
-    } > SRAM AT > FLASH
+    } > SRAM AT > FLASH  /* Saves it in FLASH and copies the data to SRAM at an appropriate point */
 
     /* Uninitialised Data */
     .bss : ALIGN (4)

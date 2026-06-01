@@ -8,8 +8,15 @@ CFLAGS 	= -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 	# Hardware
 OBJ 	= main.o startup.o
 TARGET 	= firmware
 
-LDFLAGS = -T STM32F334R8TX_FLASH.ld -Wl,--gc-sections -nostartfiles
+# Include Libraries
+CMSIS_DEVICE_INC = /home/lewisnicholson/STM32_base_CMSIS_package/CMSIS/STM32F3xx/inc
+CMSIS_DEVICE_SRC = /home/lewisnicholson/STM32_base_CMSIS_package/CMSIS/STM32F3xx/src
+CMSIS_CORE_INC   = /home/lewisnicholson/STM32_base_CMSIS_package/CMSIS/ARM/inc
 
+INCLUDE_DIRS = -I./inc -I$(CMSIS_DEVICE_INC) -I$(CMSIS_DEVICE_SRC) -I$(CMSIS_CORE_INC)
+
+# Linker Script Flags
+LDFLAGS = -T STM32F334R8TX_FLASH.ld -Wl,--gc-sections -nostartfiles
 
 # Default Rule:
 all : $(TARGET).hex
@@ -24,7 +31,7 @@ $(TARGET).hex: $(TARGET).elf
 
 # Compiler rule (using pattern rule)
 %.o: src/%.c 
-	$(CC) $(CFLAGS) -c $< -o $@ 
+	$(CC) $(CFLAGS) $(INCLUDE_DIRS) -c $< -o $@
 
 check-sections:
 	arm-none-eabi-readelf -S $(TARGET).elf

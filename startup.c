@@ -95,10 +95,10 @@ const vector_table_t vector_table[255] = {
     // The number of interrupts goes up to IRQ 239 However I don't think we actually need that many
 };
 
-void SysTick_Handler()
+/* void SysTick_Handler()
 {
     // TODO: write something for handling the Serial Clock / Timer provided by the STM board
-}
+} */
 
 void Default_Handler()
 {

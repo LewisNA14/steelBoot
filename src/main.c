@@ -12,9 +12,6 @@
 /**
  * @section Pin Registers
  */
-// #define BUTTON1
-
-#define volatile LED2 0x40020000
 
 /*========================================================================================*/
 
@@ -28,28 +25,39 @@ typedef enum{
 void LED_Blink ()
 {
     // Toggle the LED GPIO from OFF to ON
-    LEd
 
     // Toggle the LED Based on the SysTick Timer
 }
 
 // TODO: UART / USB Serial Connection Test Function
-void serial_conn()
+// void Serial_Conn
+
+void delay(uint32_t count)
 {
-    /* Using the ST-Link Digital Port tests communication between the
-       Dev Kit and the PC */
+    volatile uint32_t i = count;
+    while (i-- > 0)
+    {
+        __asm("nop");
+    }
 }
+
 
 __attribute__((noreturn)) void main() 
 {
-    while(1) 
-    {
-        // LED_Blink();
-        if (LED_ON)
-        {
+    // 1. Enable Clock for GPIOA
+    // RCC_AHBENR bit 17 is GPIOAEN
+    RCC->AHBENR |= (1 << 17);
 
-        }
+    // 2. Set PA5 as Output
+    // GPIOA_MODER: Clear bits 11:10 (00), then set bit 10 to 1 (01 = Output)
+    GPIOA->MODER &= ~(3 << 10);
+    GPIOA->MODER |= (1 << 10);
 
-        // serial_conn();
+    while (1) {
+        // 3. Toggle PA5
+        // GPIOA_ODR bit 5
+        GPIOA->ODR ^= (1 << 5);
+        
+        delay(500000); // Adjust based on clock speed
     }
 }

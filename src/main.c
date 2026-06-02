@@ -16,16 +16,26 @@
 /*========================================================================================*/
 
 typedef enum{
-    LED_ON,
-    LED_OFF
+    LED_OFF,
+    LED_ON
 } led_status_t;
 
 
 // TODO: LED Blink function
-void LED_Blink ()
+led_status_t LED_Blink (led_status_t led_status)
 {
     // Toggle the LED GPIO from OFF to ON
-
+    if (led_status == LED_OFF)
+    {
+        GPIOA->ODR |= (1U << 5);       // GPIO_ODR_5
+        led_status = LED_ON;
+    }
+    if (led_status == LED_ON)
+    {
+        GPIOA->ODR &= ~(1U << 5);       // GPIO_ODR_5
+        led_status = LED_OFF;
+    }
+    
     // Toggle the LED Based on the SysTick Timer
 }
 
@@ -44,20 +54,24 @@ void delay(uint32_t count)
 
 __attribute__((noreturn)) void main() 
 {
-    // 1. Enable Clock for GPIOA
-    // RCC_AHBENR bit 17 is GPIOAEN
-    RCC->AHBENR |= (1 << 17);
+    led_status_t led_status;
 
-    // 2. Set PA5 as Output
-    // GPIOA_MODER: Clear bits 11:10 (00), then set bit 10 to 1 (01 = Output)
-    GPIOA->MODER &= ~(3 << 10);
-    GPIOA->MODER |= (1 << 10);
+    led_status = LED_OFF;
 
-    while (1) {
-        // 3. Toggle PA5
-        // GPIOA_ODR bit 5
-        GPIOA->ODR ^= (1 << 5);
+    // 1. Enable Clock for GPIOA EN
+    RCC->AHBENR |= RCC_AHBENR_GPIOAEN;
+
+    // 2. Clearing GPIOA Pin 5
+    GPIOA->MODER &= ~(0x3U << GPIO_MODER_MODER5_Pos);
+    
+    // 3. Setting the GPIO to Output Mode
+    GPIOA->MODER |= GPIO_MODER_MODER5_0;
+    while (1)
+    {
+        delay(8000000);                     // Clock Speed is 8MHz so 5s is 40,000,000 / 5 cycles per loop = 8,000,000
+        // 4. Toggling the LED using ODR (Output Data Register).
+        led_status = LED_Blink(led_status);
+        delay(8000000);                     // Clock Speed is 8MHz so 5s is 40,000,000 / 5 cycles per loop = 8,000,000
         
-        delay(500000); // Adjust based on clock speed
     }
 }

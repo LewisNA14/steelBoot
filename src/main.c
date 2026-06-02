@@ -21,7 +21,6 @@ typedef enum{
 } led_status_t;
 
 
-// TODO: LED Blink function
 led_status_t LED_Blink (led_status_t led_status)
 {
     // Toggle the LED GPIO from OFF to ON
@@ -36,7 +35,7 @@ led_status_t LED_Blink (led_status_t led_status)
         led_status = LED_OFF;
     }
     
-    // Toggle the LED Based on the SysTick Timer
+    // TODO: Toggle the LED Based on the SysTick Timer
 }
 
 // TODO: UART / USB Serial Connection Test Function
@@ -71,7 +70,7 @@ __attribute__((noreturn)) void main()
         delay(8000000);                     // Clock Speed is 8MHz so 5s is 40,000,000 / 5 cycles per loop = 8,000,000
         // 4. Toggling the LED using ODR (Output Data Register).
         led_status = LED_Blink(led_status);
-        delay(8000000);                     // Clock Speed is 8MHz so 5s is 40,000,000 / 5 cycles per loop = 8,000,000
+        delay(8000000);                  
         
     }
 }

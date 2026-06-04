@@ -12,32 +12,32 @@
 /* Function Prototypes */
 void gpio_set();
 
-void LED_init();
-void LED_update();
+void LED2_init();
+void LED2_update();
 
-void delay(uint32_t count);
+void USART2_init();
 
 void TIM2_init();
 void TIM2_IRQHandler();
 
 
 /* Defined Types =========================================================================*/
-typedef enum led_status_e{
+typedef enum led2_status_e{
     ON,
     OFF,
-    LED_ENUM_END
-} led_status_t;
+    LED2_ENUM_END
+} led2_status_t;
 
 /* Functions ============================================================================*/
 /* TODO: Creation of a gpio_set function for the calling / handling of all current and future GPIOs*/
 /* void gpio_set()
 {
-    LED_init();        TIM2->SR &= ~(TIM_SR_UIF);       // Clearing the interrupt Flag
+    LED2_init();        TIM2->SR &= ~(TIM_SR_UIF);       // Clearing the interrupt Flag
 
 }
  */
 
-void LED_init()
+void LED2_init()
 {
     /* GPIOA Initialisation */
     GPIOA->MODER    &= ~(0x3U << GPIO_MODER_MODER5_Pos);        // Clearing GPIOA Pin 5
@@ -45,20 +45,22 @@ void LED_init()
 }
 
 
-void LED_update()
+void LED2_update()
 {
-    static led_status_t led_status = OFF;
+    static led2_status_t led2_status = OFF;
     
-    led_status++;
-    led_status = led_status % LED_ENUM_END;   // Finds the remainder between current status / 2 
+    led2_status++;
+    led2_status = led2_status % LED2_ENUM_END;   // Finds the remainder between current status / 2 
 
-    uint8_t bsrr_pos = 5 + (16*led_status);
+    uint8_t bsrr_pos = 5 + (16*led2_status);
     
     GPIOA->BSRR |= (1U << bsrr_pos);        
 }
 
 // TODO: UART / USB Serial Connection Test Function
 // void Serial_Conn
+
+void USART2_init();
 
 
 void TIM2_init()
@@ -82,7 +84,7 @@ void TIM2_IRQHandler()
     {
         TIM2->SR &= ~(TIM_SR_UIF);       // Clearing the interrupt Flag
 
-        LED_update();
+        LED2_update();
     }
 }
 
@@ -95,7 +97,7 @@ __attribute__((noreturn)) void main()
     /* RCC Peripheral Enabling / Initialisation */
     RCC->AHBENR     |= RCC_AHBENR_GPIOAEN;                      // Enable Clock for GPIOA EN
 
-    LED_init();
+    LED2_init();
     TIM2_init();
     
     /* Main Loop */

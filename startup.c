@@ -80,7 +80,7 @@ void IRQ25_Handler()    __attribute__((weak, alias("Default_Handler")));        
 void IRQ26_Handler()    __attribute__((weak, alias("Default_Handler")));            /* Interrupt 26 */
 void IRQ27_Handler()    __attribute__((weak, alias("Default_Handler")));            /* Interrupt 27 */
 
-void TIM2_Handler()    __attribute__((weak, alias("Default_Handler")));            /* Interrupt 28 */
+void TIM2_IRQHandler()  __attribute__((weak, alias("Default_Handler")));            /* Interrupt 28, TIM2 Global Interrupt*/
     
 /*=============================================================================================*/
 /**
@@ -144,15 +144,10 @@ const vector_table_t vector_table[255] = {
     IRQ26_Handler,                  /* Interrupt 26 */
     IRQ27_Handler,                  /* Interrupt 27 */
 
-    TIM2_Handler,                   /* Interrupt 28 */
+    TIM2_IRQHandler,                   /* Interrupt 28, TIM2 Clock Global Interrupt */
 
-    // The number of interrupts goes up to IRQ 239 However I don't think we actually need that many
+    // The number of interrupts goes up to IRQ 239 However I don't think we actually need that many for now
 };
-
-/* void SysTick_Handler()
-{
-    // TODO: write something for handling the Serial Clock / Timer provided by the STM board
-} */
 
 void Default_Handler()
 {
@@ -162,10 +157,6 @@ void Default_Handler()
     }
 }
 
-void TIM2_Handler()
-{
-    
-}
 
 /* Reset Handler for reinitialising .data values from .text and wiping the .bss values */
 void Reset_Handler()

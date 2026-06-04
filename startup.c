@@ -51,10 +51,36 @@ void SysTick_Handler(void)      __attribute__((weak, alias("Default_Handler")));
 void Default_Handler(void); 
 
 /* Interrupts */
-void IRQ0_Handler()  __attribute__((weak, alias("Default_Handler")));            /* Interrupt 0 */            
-void IRQ1_Handler()  __attribute__((weak, alias("Default_Handler")));            /* Interrupt 1 */
-void IRQ2_Handler()  __attribute__((weak, alias("Default_Handler")));            /* Interrupt 2 */
-void IRQ3_Handler()  __attribute__((weak, alias("Default_Handler")));            /* Interrupt 3 */
+void IRQ0_Handler()     __attribute__((weak, alias("Default_Handler")));            /* Interrupt 0 */            
+void IRQ1_Handler()     __attribute__((weak, alias("Default_Handler")));            /* Interrupt 1 */
+void IRQ2_Handler()     __attribute__((weak, alias("Default_Handler")));            /* Interrupt 2 */
+void IRQ3_Handler()     __attribute__((weak, alias("Default_Handler")));            /* Interrupt 3 */
+void IRQ4_Handler()     __attribute__((weak, alias("Default_Handler")));            /* Interrupt 4 */
+void IRQ5_Handler()     __attribute__((weak, alias("Default_Handler")));            /* Interrupt 5 */
+void IRQ6_Handler()     __attribute__((weak, alias("Default_Handler")));            /* Interrupt 6 */
+void IRQ7_Handler()     __attribute__((weak, alias("Default_Handler")));            /* Interrupt 7 */
+void IRQ8_Handler()     __attribute__((weak, alias("Default_Handler")));            /* Interrupt 8 */
+void IRQ9_Handler()     __attribute__((weak, alias("Default_Handler")));            /* Interrupt 9 */
+void IRQ10_Handler()    __attribute__((weak, alias("Default_Handler")));            /* Interrupt 10 */
+void IRQ11_Handler()    __attribute__((weak, alias("Default_Handler")));            /* Interrupt 11 */
+void IRQ12_Handler()    __attribute__((weak, alias("Default_Handler")));            /* Interrupt 12 */
+void IRQ13_Handler()    __attribute__((weak, alias("Default_Handler")));            /* Interrupt 13 */
+void IRQ14_Handler()    __attribute__((weak, alias("Default_Handler")));            /* Interrupt 14 */
+void IRQ15_Handler()    __attribute__((weak, alias("Default_Handler")));            /* Interrupt 15 */
+void IRQ16_Handler()    __attribute__((weak, alias("Default_Handler")));            /* Interrupt 16 */
+void IRQ17_Handler()    __attribute__((weak, alias("Default_Handler")));            /* Interrupt 17 */
+void IRQ18_Handler()    __attribute__((weak, alias("Default_Handler")));            /* Interrupt 18 */
+void IRQ19_Handler()    __attribute__((weak, alias("Default_Handler")));            /* Interrupt 19 */
+void IRQ20_Handler()    __attribute__((weak, alias("Default_Handler")));            /* Interrupt 20 */
+void IRQ21_Handler()    __attribute__((weak, alias("Default_Handler")));            /* Interrupt 21 */
+void IRQ22_Handler()    __attribute__((weak, alias("Default_Handler")));            /* Interrupt 22 */
+void IRQ23_Handler()    __attribute__((weak, alias("Default_Handler")));            /* Interrupt 23 */
+void IRQ24_Handler()    __attribute__((weak, alias("Default_Handler")));            /* Interrupt 24 */
+void IRQ25_Handler()    __attribute__((weak, alias("Default_Handler")));            /* Interrupt 25 */
+void IRQ26_Handler()    __attribute__((weak, alias("Default_Handler")));            /* Interrupt 26 */
+void IRQ27_Handler()    __attribute__((weak, alias("Default_Handler")));            /* Interrupt 27 */
+
+void TIM2_Handler()    __attribute__((weak, alias("Default_Handler")));            /* Interrupt 28 */
     
 /*=============================================================================================*/
 /**
@@ -69,6 +95,8 @@ typedef void (*const vector_table_t)(void);
 __attribute__((section(".isr_vector"), used))
 const vector_table_t vector_table[255] = {        
 /* Vector Table containing pointers to each relevant memory address */
+
+    /* ARM Cortex-M4 Processor Exceptions*/
     (vector_table_t)(&_stack_ptr),                      /* Initial Stack Pointer */ 
     Reset_Handler,                                      /* Reset Handler */
     NMI_Handler,                                        /* NMI Handler */
@@ -85,12 +113,38 @@ const vector_table_t vector_table[255] = {
     0,                                                  /* Reserved */
     PendSV_Handler,                                     /* Pend SV Handler */
     SysTick_Handler,                                    /* SysTick Handler*/
+    
+    /* STM32 Specific Interrupts */
+    IRQ0_Handler,                   /* Interrupt 0 */
+    IRQ1_Handler,                   /* Interrupt 1 */
+    IRQ2_Handler,                   /* Interrupt 2 */
+    IRQ3_Handler,                   /* Interrupt 3 */
+    IRQ4_Handler,                   /* Interrupt 4 */
+    IRQ5_Handler,                   /* Interrupt 5 */
+    IRQ6_Handler,                   /* Interrupt 6 */
+    IRQ7_Handler,                   /* Interrupt 7 */
+    IRQ8_Handler,                   /* Interrupt 8 */
+    IRQ9_Handler,                   /* Interrupt 9 */
+    IRQ10_Handler,                  /* Interrupt 10 */
+    IRQ11_Handler,                  /* Interrupt 11 */
+    IRQ12_Handler,                  /* Interrupt 12 */
+    IRQ13_Handler,                  /* Interrupt 13 */
+    IRQ14_Handler,                  /* Interrupt 14 */
+    IRQ15_Handler,                  /* Interrupt 15 */
+    IRQ16_Handler,                  /* Interrupt 16 */
+    IRQ17_Handler,                  /* Interrupt 17 */
+    IRQ18_Handler,                  /* Interrupt 18 */
+    IRQ19_Handler,                  /* Interrupt 19 */
+    IRQ20_Handler,                  /* Interrupt 20 */
+    IRQ21_Handler,                  /* Interrupt 21 */
+    IRQ22_Handler,                  /* Interrupt 22 */
+    IRQ23_Handler,                  /* Interrupt 23 */
+    IRQ24_Handler,                  /* Interrupt 24 */
+    IRQ25_Handler,                  /* Interrupt 25 */
+    IRQ26_Handler,                  /* Interrupt 26 */
+    IRQ27_Handler,                  /* Interrupt 27 */
 
-    /* Interrupts */
-    IRQ0_Handler,               /* Interrupt 0 */
-    IRQ1_Handler,               /* Interrupt 1 */
-    IRQ2_Handler,               /* Interrupt 2 */
-    IRQ3_Handler,               /* Interrupt 3 */
+    TIM2_Handler,                   /* Interrupt 28 */
 
     // The number of interrupts goes up to IRQ 239 However I don't think we actually need that many
 };
@@ -106,6 +160,11 @@ void Default_Handler()
     {
         // Runs forever
     }
+}
+
+void TIM2_Handler()
+{
+    
 }
 
 /* Reset Handler for reinitialising .data values from .text and wiping the .bss values */

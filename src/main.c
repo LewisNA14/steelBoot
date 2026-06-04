@@ -28,7 +28,7 @@ void LED_Set()
     static led_status_t led_status = OFF;     // Default value is OFF
 
     led_status++;
-    led_status = led_status % LED_ENUM_END;
+    led_status = led_status % LED_ENUM_END;   // Finds the remainder between current status / 2 
 
     uint8_t bsrr_pos = 5 + (16*led_status);
     
@@ -51,16 +51,9 @@ void delay(uint32_t count)
 
 /* TODO: Implement Simple Timer using a TIM peripheral */
 /* Timer Function (TIM2) */
-void timer()
+void TIM2_IRQHandler()
 {
-    // enable the TIM2 Peripheral
-    NVIC_EnableIRQ(TIM2_IRQn);
 
-    // shuts down all un-used peripherals
-
-    // enables mentioned / defined peripherals
-
-    // counts up from 0 to 1 second to enable interrupt to switch LED state
 }
 
 
@@ -86,7 +79,9 @@ __attribute__((noreturn)) void main()
     TIM2->PSC       =  7999;                                    // Clock Frequency reduced to every 1ms
     TIM2->ARR       =  999;                                     // Update Event every 1s
 
+    NVIC_EnableIRQ(TIM2_IRQn);
 
+    TIM2->CR1 |= TIM_CR1_CEN;
     // Clear the TIM2 Pin 
     // Set the TIM2 with the prescaler
 

@@ -9,13 +9,16 @@
 #include <stdint.h>
 #include "stm32f334x8.h"
 
-/* Function Prototypes */
+/* Function Prototypes ===================================================================*/
 void gpio_set();
+
 
 void LED2_init();
 void LED2_update();
 
 void USART2_init();
+void USART2_Tx();
+void USART2_Rx();
 
 void TIM2_init();
 void TIM2_IRQHandler();
@@ -28,6 +31,12 @@ typedef enum led2_status_e{
     LED2_ENUM_END
 } led2_status_t;
 
+typedef enum usart2_status_e{
+    OFF,
+    RX,
+    TX,
+    USART2_END
+} usart2_status_t;`
 /* Functions ============================================================================*/
 /* TODO: Creation of a gpio_set function for the calling / handling of all current and future GPIOs*/
 /* void gpio_set()
@@ -58,9 +67,13 @@ void LED2_update()
 }
 
 // TODO: UART / USB Serial Connection Test Function
-// void Serial_Conn
-
 void USART2_init();
+{
+    // Tx Pin is PA2
+    // Rx Pin is PA3
+
+}
+
 
 
 void TIM2_init()
@@ -86,6 +99,9 @@ void TIM2_IRQHandler()
 
         LED2_update();
     }
+    // TODO: Implement Low Power Mode (LPWM).
+    // TODO: Disable unused peripherals.
+    // TODO: Wakeup peripheral re-initilisation on timer interrupt.
 }
 
 

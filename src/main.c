@@ -66,11 +66,11 @@ void LED2_update()
 
     uint8_t bsrr_pos = 5 + (16*led2_status);
     
-    GPIOA->BSRR |= (1U << bsrr_pos);        
+    GPIOA->BSRR = (1U << bsrr_pos);        
 }
 
 // TODO: UART / USB Serial Connection Test Function
-void USART2_init();
+void USART2_init()
 {
     // Tx Pin is PA2
     // Rx Pin is PA3
@@ -97,10 +97,9 @@ void TIM2_IRQHandler()
     if (TIM2->SR & TIM_SR_UIF)
     {
         TIM2->SR &= ~(TIM_SR_UIF);       // Clearing the interrupt Flag
-        // TODO: Construct Ticker-Driven System.
         
         g_tick_count++;
-        if((g_tick_count % 1000) == 0)
+        if((g_tick_count % 1) == 0)
         {
             LED2_update();
         }

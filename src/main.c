@@ -9,6 +9,9 @@
 #include <stdint.h>
 #include "stm32f334x8.h"
 
+/* Global Variables ======================================================================*/
+volatile uint32_t g_tick_count = 0;
+
 /* Function Prototypes ===================================================================*/
 void gpio_set();
 
@@ -32,11 +35,11 @@ typedef enum led2_status_e{
 } led2_status_t;
 
 typedef enum usart2_status_e{
-    OFF,
+    CLOSED,
     RX,
     TX,
     USART2_END
-} usart2_status_t;`
+} usart2_status_t;
 /* Functions ============================================================================*/
 /* TODO: Creation of a gpio_set function for the calling / handling of all current and future GPIOs*/
 /* void gpio_set()
@@ -53,6 +56,20 @@ void LED2_init()
     GPIOA->MODER    |= GPIO_MODER_MODER5_0;                     // Setting the GPIO to Output Mode
 }
 
+void USART2_init()
+{
+    // Tx is Pin PA2
+    // Rx is Pin PA3
+    RCC->APB1ENR    |= RCC_APB1ENR_USART2EN;                    // Enable the USART2 Peripheral at the Reset Clock
+
+    // Enabling Tx and Rx on GPIOA
+    GPIO->MODER     &= ~(3U << GPIO_MODER_MODER2_Pos)           // Clearing Tx Bits
+    GPIO->MODER     &= ~(3U << GPIO_MODER_MODER3_Pos)           // Clearing Rx Bits
+
+    GPIOA->MODER    |= GPIO_MODER_MODER2_0;                     // Setting Tx Pin 
+    GPIOA->MODER    |= GPIO_MODER_MODER3_0;                     // Setting Rx Pin 
+
+}
 
 void LED2_update()
 {
@@ -63,18 +80,10 @@ void LED2_update()
 
     uint8_t bsrr_pos = 5 + (16*led2_status);
     
-    GPIOA->BSRR |= (1U << bsrr_pos);        
+    GPIOA->BSRR = (1U << bsrr_pos);        
 }
 
 // TODO: UART / USB Serial Connection Test Function
-void USART2_init();
-{
-    // Tx Pin is PA2
-    // Rx Pin is PA3
-
-}
-
-
 
 void TIM2_init()
 {
@@ -88,18 +97,20 @@ void TIM2_init()
     TIM2->CR1 |= TIM_CR1_CEN;                                   // Enables Counter
 }
 
-
-/* TODO: Implement Simple Timer using a TIM peripheral */
 /* Timer Function (TIM2) */
 void TIM2_IRQHandler()
 {
     if (TIM2->SR & TIM_SR_UIF)
     {
         TIM2->SR &= ~(TIM_SR_UIF);       // Clearing the interrupt Flag
-
-        LED2_update();
+        
+        g_tick_count++;
+        if((g_tick_count % 5) == 0)
+        {
+            LED2_update();
+        }
     }
-    // TODO: Implement Low Power Mode (LPWM).
+    
     // TODO: Disable unused peripherals.
     // TODO: Wakeup peripheral re-initilisation on timer interrupt.
 }
@@ -119,6 +130,7 @@ __attribute__((noreturn)) void main()
     /* Main Loop */
     while (1)
     {
-        // Runs forever
+        // TODO: Implement Low Power Mode (LPWM).
+        __WFI();// Runs forever
     }
 }

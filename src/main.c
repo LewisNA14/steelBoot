@@ -9,6 +9,9 @@
 #include <stdint.h>
 #include "stm32f334x8.h"
 
+/* Global Variables ======================================================================*/
+volatile uint32_t g_tick_count = 0;
+
 /* Function Prototypes ===================================================================*/
 void gpio_set();
 
@@ -32,11 +35,11 @@ typedef enum led2_status_e{
 } led2_status_t;
 
 typedef enum usart2_status_e{
-    OFF,
+    CLOSED,
     RX,
     TX,
     USART2_END
-} usart2_status_t;`
+} usart2_status_t;
 /* Functions ============================================================================*/
 /* TODO: Creation of a gpio_set function for the calling / handling of all current and future GPIOs*/
 /* void gpio_set()
@@ -88,20 +91,25 @@ void TIM2_init()
     TIM2->CR1 |= TIM_CR1_CEN;                                   // Enables Counter
 }
 
-
-/* TODO: Implement Simple Timer using a TIM peripheral */
 /* Timer Function (TIM2) */
 void TIM2_IRQHandler()
 {
     if (TIM2->SR & TIM_SR_UIF)
     {
         TIM2->SR &= ~(TIM_SR_UIF);       // Clearing the interrupt Flag
-
-        LED2_update();
+        // TODO: Construct Ticker-Driven System.
+        
+        g_tick_count++;
+        if((g_tick_count % 1000) == 0)
+        {
+            LED2_update();
+        }
     }
     // TODO: Implement Low Power Mode (LPWM).
     // TODO: Disable unused peripherals.
     // TODO: Wakeup peripheral re-initilisation on timer interrupt.
+
+
 }
 
 

@@ -20,8 +20,8 @@ void LED2_init();
 void LED2_update();
 
 void USART2_init();
-void USART2_Tx();
-void USART2_Rx();
+void USART2_write();
+void USART2_read();
 
 void TIM2_init();
 void TIM2_IRQHandler();
@@ -58,17 +58,29 @@ void LED2_init()
 
 void USART2_init()
 {
-    // Tx is Pin PA2
-    // Rx is Pin PA3
+    // Tx is Pin PA2 & Rx is Pin PA3
     RCC->APB1ENR    |= RCC_APB1ENR_USART2EN;                    // Enable the USART2 Peripheral at the Reset Clock
 
-    // Enabling Tx and Rx on GPIOA
-    GPIO->MODER     &= ~(3U << GPIO_MODER_MODER2_Pos)           // Clearing Tx Bits
-    GPIO->MODER     &= ~(3U << GPIO_MODER_MODER3_Pos)           // Clearing Rx Bits
+    /* GPIO Port Mode Register */
+    GPIOA->MODER    &= ~((3U << (2 * 2)) | (3U << (3 * 2)));    // Clearing Tx and Rx Bits
 
-    GPIOA->MODER    |= GPIO_MODER_MODER2_0;                     // Setting Tx Pin 
-    GPIOA->MODER    |= GPIO_MODER_MODER3_0;                     // Setting Rx Pin 
+    // Setting Tx and Rx to Alternate Function (hands control of a GPIO pin over to an internal hardware peripheral, UART in this case)
+    GPIOA->MODER    |=  ((2U << (2 * 2)) | (2U << (3 * 2)));      
 
+    /* GPIO Alternate Function Low Register */
+    GPIOA->AFR[0]   &= ~((0xFU << (2 * 4))  | (0xFU << (3 * 4))); 
+    GPIOA->AFR[0]   |=  ((7U << (2 * 4))    | (7U << (3 * 4)));    // Set PA2 (Tx) and PA3 (Rx) to AF7 (USART2) in alternate function low register
+
+    /* USART Control Register 1 */
+    USART2->BRR = 8000000 / 115200;                             // Example for 8MHz clock @ 115200 baud
+
+    // Enabling Transmit, Receiver, and the USART periph itself
+    USART2->CR1 |= (USART_CR1_TE | USART_CR1_RE | USART_CR1_UE);
+}
+
+void USART2_write()
+{
+    
 }
 
 void LED2_update()
@@ -108,6 +120,7 @@ void TIM2_IRQHandler()
         if((g_tick_count % 5) == 0)
         {
             LED2_update();
+            USART2_write_string("Tick Update!\r\n");
         }
     }
     
@@ -126,6 +139,7 @@ __attribute__((noreturn)) void main()
 
     LED2_init();
     TIM2_init();
+    USART2_init();
     
     /* Main Loop */
     while (1)

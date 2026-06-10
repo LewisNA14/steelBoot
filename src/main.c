@@ -7,10 +7,18 @@
 
 /* Includes ==============================================================================*/ 
 #include <stdint.h>
+#include <stdlib.h>
+#include <stdbool.h>
 #include "stm32f334x8.h"
+
+/* Defines ===============================================================================*/
+#define RING_BUFF 128
+
+
 
 /* Global Variables ======================================================================*/
 volatile uint32_t g_tick_count = 0;
+
 
 /* Function Prototypes ===================================================================*/
 void gpio_set();
@@ -20,7 +28,8 @@ void LED2_init();
 void LED2_update();
 
 void USART2_init();
-void USART2_write();
+void USART2_write(char c);
+void USART2_string(const char* str);
 void USART2_read();
 
 void TIM2_init();
@@ -40,6 +49,22 @@ typedef enum usart2_status_e{
     TX,
     USART2_END
 } usart2_status_t;
+
+/* Defined Structs ======================================================================*/
+typedef struct Rx_ring_buff_s{
+    int rx_buff[RING_BUFF];
+    int rx_head;
+    int rx_tail;
+    int rx_size;
+}Rx_ring_buff_t;
+
+typedef struct Tx_ring_buff_s{
+    int Tx_Buff[RING_BUFF];
+    int tx_head;
+    int tx_tail;
+    int tx_size;
+}Tx_ring_buff_t;
+
 /* Functions ============================================================================*/
 /* TODO: Creation of a gpio_set function for the calling / handling of all current and future GPIOs*/
 /* void gpio_set()
@@ -48,6 +73,31 @@ typedef enum usart2_status_e{
 
 }
  */
+
+void RingBuff_init(Tx_ring_buff_t *txBuff, Rx_ring_buff_t *rxBuff)
+{
+    // 1. Reset all values within the buffer to 0 or NULL.
+    txBuff->tx_head = 0;
+    txBuff->tx_tail = 0;
+    txBuff->tx_size = 0;
+
+    rxBuff->rx_head = 0;
+    rxBuff->rx_tail = 0;
+    rxBuff->rx_size = 0;
+}
+
+void RxBuff_Check()
+{
+    // 1. Check the buffer is empty
+    // 2. If it's empty return a state or value to indicate as such
+}
+
+void RxBuff_Update()
+{
+    // 1. Check the value is valid of which you want to instert
+    // 2. If ok then insert the value into the RxBuff 
+    // 3. Update the head of the ring buffer to reflect the increased no of values
+}
 
 void LED2_init()
 {
@@ -59,29 +109,67 @@ void LED2_init()
 void USART2_init()
 {
     // Tx is Pin PA2 & Rx is Pin PA3
-    RCC->APB1ENR    |= RCC_APB1ENR_USART2EN;                    // Enable the USART2 Peripheral at the Reset Clock
+    RCC->APB1ENR    |= RCC_APB1ENR_USART2EN;                        // Enable the USART2 Peripheral at the Reset Clock
 
     /* GPIO Port Mode Register */
-    GPIOA->MODER    &= ~((3U << (2 * 2)) | (3U << (3 * 2)));    // Clearing Tx and Rx Bits
+    GPIOA->MODER    &= ~((3U << (2 * 2)) | (3U << (3 * 2)));        // Clearing Tx and Rx Bits
 
     // Setting Tx and Rx to Alternate Function (hands control of a GPIO pin over to an internal hardware peripheral, UART in this case)
     GPIOA->MODER    |=  ((2U << (2 * 2)) | (2U << (3 * 2)));      
 
     /* GPIO Alternate Function Low Register */
     GPIOA->AFR[0]   &= ~((0xFU << (2 * 4))  | (0xFU << (3 * 4))); 
-    GPIOA->AFR[0]   |=  ((7U << (2 * 4))    | (7U << (3 * 4)));    // Set PA2 (Tx) and PA3 (Rx) to AF7 (USART2) in alternate function low register
+    GPIOA->AFR[0]   |=  ((7U << (2 * 4))    | (7U << (3 * 4)));     // Set PA2 (Tx) and PA3 (Rx) to AF7 (USART2) in alternate function low register
 
     /* USART Control Register 1 */
-    USART2->BRR = 8000000 / 115200;                             // Example for 8MHz clock @ 115200 baud
+    USART2->BRR = 69;                                               /* Set baud rate to 115200 with an 8MHz peripheral clock */
 
     // Enabling Transmit, Receiver, and the USART periph itself
-    USART2->CR1 |= (USART_CR1_TE | USART_CR1_RE | USART_CR1_UE);
+    USART2->CR1 |= (USART_CR1_TE | USART_CR1_RE );
+    USART2->CR1 |= USART_CR1_UE;
 }
 
-void USART2_write()
+/* USART Tx Functions =====================================================================*/
+void USART2_write(char c)
 {
-    
+    while(!(USART2->ISR & USART_ISR_TXE))
+    {
+        /* Wait until the Transmit Data Register is empty (TXE) */
+    }
+    USART2->TDR = (uint8_t)c;    
 }
+
+void USART2_string(const char* str)
+{
+    while(*str)
+    {
+        USART2_write(*str++);
+    }
+    while (!(USART2->ISR & USART_ISR_TC)) 
+    {
+        // Block until the final bit (stop bit) has cleared the shift register
+    }
+    // TODO: Implememnt the Tx Ring Buffer.
+}
+
+/* USART2 Rx Functions */
+char USART2_read()
+{
+    int i = 0;
+    char read_buff[256];
+    while(!(USART2->ISR & USART_ISR_RXNE))
+    {
+        /* Wait for data to be read as channel is empty */
+    }
+    do
+    {
+        read_buff[i] = USART2->RDR;
+        i++;
+    }
+    while(read_buff[i-1] != '\r' && read_buff[i-1] != '\n');
+    // TODO: instead of read buff use the Rx_Ring_Buff    
+}
+
 
 void LED2_update()
 {
@@ -120,7 +208,7 @@ void TIM2_IRQHandler()
         if((g_tick_count % 5) == 0)
         {
             LED2_update();
-            USART2_write_string("Tick Update!\r\n");
+            USART2_string("Tick Update!\r\n");
         }
     }
     
@@ -128,6 +216,16 @@ void TIM2_IRQHandler()
     // TODO: Wakeup peripheral re-initilisation on timer interrupt.
 }
 
+/**
+ * 
+ * void USART2_IRQHandler()
+ * {
+ *      if (USART_CR1_TXEIE)
+ *      {
+ *          USART2_write("Transmit Data Register is empty!");
+ *      }
+ * }
+ */
 
 /**
  * @brief Main Program Loop

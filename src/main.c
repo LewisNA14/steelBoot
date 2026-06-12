@@ -1,6 +1,5 @@
 /**
  * @file    main.c
- * @author  Lewis Nicholson-Andrews
  * @brief   This is where the main logic of the program is held
  * 
  */
@@ -23,9 +22,18 @@ volatile uint32_t g_tick_count = 0;
 /* Function Prototypes ===================================================================*/
 void gpio_set();
 
-
 void LED2_init();
 void LED2_update();
+
+void RingBuff_init(Tx_ring_buff_t *txBuff, Rx_ring_buff_t *rxBuff);
+
+void RxBuff_Check();
+void RxBuff_Push();
+void RxBuff_Pop();
+
+void TxBuff_Check();
+void TxBuff_Push();
+void TxBuff_Pop();
 
 void USART2_init();
 void USART2_write(char c);
@@ -35,7 +43,6 @@ void USART2_read();
 void TIM2_init();
 void TIM2_IRQHandler();
 
-
 /* Defined Types =========================================================================*/
 typedef enum led2_status_e{
     ON,
@@ -43,27 +50,27 @@ typedef enum led2_status_e{
     LED2_ENUM_END
 } led2_status_t;
 
-typedef enum usart2_status_e{
+/* typedef enum usart2_status_e{
     CLOSED,
     RX,
     TX,
+    DONE,
     USART2_END
-} usart2_status_t;
+} usart2_status_t; */
+
+typedef enum status_codes_e{
+    DONE,       // 0
+    BUSY,       // 1
+    ERROR       // 2
+}status_codes_t;
 
 /* Defined Structs ======================================================================*/
-typedef struct Rx_ring_buff_s{
-    int rx_buff[RING_BUFF];
-    int rx_head;
-    int rx_tail;
-    int rx_size;
-}Rx_ring_buff_t;
-
-typedef struct Tx_ring_buff_s{
-    int Tx_Buff[RING_BUFF];
-    int tx_head;
-    int tx_tail;
-    int tx_size;
-}Tx_ring_buff_t;
+typedef struct ring_buff_s{
+    uint8_t buff[RING_BUFF]
+    int head;
+    int tail;
+    int count;
+}ring_buff_t;
 
 /* Functions ============================================================================*/
 /* TODO: Creation of a gpio_set function for the calling / handling of all current and future GPIOs*/
@@ -74,30 +81,75 @@ typedef struct Tx_ring_buff_s{
 }
  */
 
-void RingBuff_init(Tx_ring_buff_t *txBuff, Rx_ring_buff_t *rxBuff)
+void RingBuff_init(ring_buff_t *txBuff, ring_buff_t *rxBuff)
 {
-    // 1. Reset all values within the buffer to 0 or NULL.
-    txBuff->tx_head = 0;
-    txBuff->tx_tail = 0;
-    txBuff->tx_size = 0;
+    /* Reset all values within the buffer to 0 or NULL. */
+    txBuff->head  = 0;
+    txBuff->tail  = 0;
+    txBuff->count = 0;
 
-    rxBuff->rx_head = 0;
-    rxBuff->rx_tail = 0;
-    rxBuff->rx_size = 0;
+    rxBuff->head  = 0;
+    rxBuff->tail  = 0;
+    rxBuff->count = 0;
 }
 
-void RxBuff_Check()
+/**
+ * @brief This function receives the byte from the UART and stores it within the Ring Buffer
+ */
+void RingBuff_Push(ring_buff_t *Buff, uint8_t rxByte_in)
 {
-    // 1. Check the buffer is empty
-    // 2. If it's empty return a state or value to indicate as such
+    /* First write to buffer */
+    Buff->buff[Buff->head] = rxByte_in;
+    Buff->head = (Buff->head + 1) % RING_BUFF;
+    
+    /* Check if the ring buffer is full or has available space */ 
+    if  (Buff->count == RING_BUFF)
+    {
+        Buff->tail = (Buff->tail + 1) % RING_BUFF;
+    }
+    else 
+    {
+        Buff->count++;
+    }
 }
 
-void RxBuff_Update()
+/**
+ * @brief This function pushes the byte from the buffer to the necessary program function
+ */
+status_code_t RingBuff_Pop(ring_buff_t *Buff, uint8_t *rxByte_out)
 {
-    // 1. Check the value is valid of which you want to instert
-    // 2. If ok then insert the value into the RxBuff 
-    // 3. Update the head of the ring buffer to reflect the increased no of values
+    status_code_t stat;
+    // 1. Read the byte from the buffer to another array
+    // 2. Ensure the tail doesn't exceed the heads position
+    if (Buff->tail == Buff->head)
+    {
+        // Return nothing since you'd be reading stale data
+        return ERROR;
+    }
+    else
+    {
+        *Byte_out         = Buff->buff[Buff->tail]; 
+        Buff->tail        = (Buff->tail + 1) % RING_BUFF;
+        Buff->count--;
+    }
+    return DONE;
 }
+
+void TxBuff_Check()
+{
+
+}
+
+void TxBuff_Push()
+{
+
+}
+
+void TxBuff_Pop()
+{
+
+}
+
 
 void LED2_init()
 {
@@ -152,24 +204,42 @@ void USART2_string(const char* str)
     // TODO: Implememnt the Tx Ring Buffer.
 }
 
-/* USART2 Rx Functions */
+/* USART2 Rx Functions ====================================================================*/
 char USART2_read()
 {
+    // TODO: use the Rx_Ring_Buff    
+    uint8_t rxByte_out = 0;
+    char rx_arr[256];
     int i = 0;
-    char read_buff[256];
-    while(!(USART2->ISR & USART_ISR_RXNE))
+
+    stat = RxBuff_Pop();
+
+    if (stat == ERROR)
     {
-        /* Wait for data to be read as channel is empty */
+        Default_Handler();
     }
-    do
+    else if (stat == DONE)
     {
-        read_buff[i] = USART2->RDR;
-        i++;
+        while(rxByte_out != '\r')
+        {
+            rx_arr[i] = rxByte_out;
+            i++;
+        }
     }
-    while(read_buff[i-1] != '\r' && read_buff[i-1] != '\n');
-    // TODO: instead of read buff use the Rx_Ring_Buff    
 }
 
+/* USART IRQ Handlers ==========================================================================*/
+void USART_RX_ISR()
+{
+
+}
+
+void USART_TX_ISR()
+{
+
+}
+
+/* LED Functions ===============================================================================*/
 
 void LED2_update()
 {
@@ -220,11 +290,17 @@ void TIM2_IRQHandler()
  * 
  * void USART2_IRQHandler()
  * {
+ *      char* string; 
  *      if (USART_CR1_TXEIE)
  *      {
+ *          TxBuff_Push(txByte);
+ *          string = TxBuff_Pop();
  *          USART2_write("Transmit Data Register is empty!");
  *      }
- * }
+ *      if (USART_CR1_RXENIE)
+ *      {
+ *          RxBuff_Push(rxByte);
+ *      }
  */
 
 /**
@@ -238,6 +314,7 @@ __attribute__((noreturn)) void main()
     LED2_init();
     TIM2_init();
     USART2_init();
+    RingBuff_init();
     
     /* Main Loop */
     while (1)

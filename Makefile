@@ -5,7 +5,7 @@
 CC 		= arm-none-eabi-gcc		# ARM Toolchain Compiler
 CCOPY   = arm-none-eabi-objcopy	# Toolchain for copying / converting
 CFLAGS 	= -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 	# Hardware peripheral / Compiler flags
-OBJ 	= main.o startup.o
+OBJ 	= startup.o led2.o main.o ringbuff.o tim2.o usart2.o
 TARGET 	= firmware
 
 # Include Libraries

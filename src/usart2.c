@@ -1,14 +1,20 @@
-
+/**
+ * @file usart2.c
+ * @author L. Nicholson-Andrews
+ * 
+ * @brief
+ */
 
 
 
 
 
 #include "stm32f334x8.h"
+#include "ringbuff.h"
 
 
 /* Functions */
-void USART2_init()
+void USART2_init(void)
 {
     // Tx is Pin PA2 & Rx is Pin PA3
     RCC->APB1ENR    |= RCC_APB1ENR_USART2EN;                        // Enable the USART2 Peripheral at the Reset Clock
@@ -55,20 +61,20 @@ void USART2_string(const char* str)
 }
 
 /* USART2 Rx Functions ====================================================================*/
-char USART2_read()
+char USART2_read(status_code_t *state, ring_buff_t *rxBuff)
 {
     // TODO: use the Rx_Ring_Buff    
     uint8_t rxByte_out = 0;
     char rx_arr[256];
     int i = 0;
 
-    stat = RxBuff_Pop();
-
-    if (stat == ERROR)
+    *state = RingBuff_Pop(rxBuff, &rxByte_out);
+    if (*state == ERROR)
     {
-        Default_Handler();
+        /* TODO: Add error handling and functions for such operations */
+        // Default_Handler();
     }
-    else if (stat == DONE)
+    else if ((*state == DONE) || (*state == OVERWRITE))
     {
         while(rxByte_out != '\r')
         {

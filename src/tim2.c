@@ -2,6 +2,9 @@
 
 
 #include "stm32f334x8.h"
+#include "tim2.h"
+#include "usart2.h"
+#include "led2.h"
 
 void TIM2_init()
 {

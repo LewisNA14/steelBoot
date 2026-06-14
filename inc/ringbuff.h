@@ -8,8 +8,13 @@
 #define RINGBUFF_H
 
 /* Includes */
+
+/* Standard Library */
 #include <stdlib.h>
 #include <stdint.h>
+
+
+#include "main.h"
 
 /* Defines */
 #define RING_BUFF 256
@@ -22,10 +27,14 @@ typedef struct ring_buff_s{
     int count;
 }ring_buff_t;
 
-/* Function Prototypes */
-void RingBuff_init(ring_buff_t *txBuff, ring_buff_t *rxBuff);
+/* Declarations */
+extern ring_buff_t txBuff;
+extern ring_buff_t rxBuff;
 
-void RingBuff_Push();
-void RingBuff_Pop();
+/* Function Prototypes */
+void RingBuff_init(ring_buff_t *Buff);
+
+status_code_t RingBuff_Push(ring_buff_t *Buff, uint8_t Byte_in);
+status_code_t RingBuff_Pop(ring_buff_t *Buff, uint8_t *Byte_out);
 
 #endif // RINGBUFF_H

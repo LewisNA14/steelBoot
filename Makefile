@@ -2,8 +2,8 @@
 # As well as the Toolchains required for compilation
 
 # Variables
-CC 		= arm-none-eabi-gcc		# ARM Toolchain Compiler
-CCOPY   = arm-none-eabi-objcopy	# Toolchain for copying / converting
+CC 		= arm-none-eabi-gcc												# ARM Toolchain Compiler
+CCOPY   = arm-none-eabi-objcopy											# Toolchain for copying / converting
 CFLAGS 	= -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 	# Hardware peripheral / Compiler flags
 OBJ 	= startup.o led2.o main.o ringbuff.o tim2.o usart2.o
 TARGET 	= firmware
@@ -23,15 +23,19 @@ all : $(TARGET).hex
 
 # Linker Script Rule for creating ELF
 $(TARGET).elf: $(OBJ)
-	$(CC) $(CFLAGS) $(OBJ) $(LDFLAGS) -o $@
+	@echo "  LINK    $@"
+	@$(CC) $(CFLAGS) $(OBJ) $(LDFLAGS) -o $@
 
 # Convert ELF to HEX
 $(TARGET).hex: $(TARGET).elf
-	$(CCOPY) -O ihex $< $@
+	@echo "  OBJCOPY $@"
+	@$(CCOPY) -O ihex $< $@
 
 # Compiler rule (using pattern rule)
 %.o: src/%.c 
-	$(CC) $(CFLAGS) $(INCLUDE_DIRS) -c $< -o $@
+	@echo " CC		$<"
+	@$(CC) $(CFLAGS) $(INCLUDE_DIRS) -c $< -o $@
+
 
 check-sections:
 	arm-none-eabi-readelf -S $(TARGET).elf

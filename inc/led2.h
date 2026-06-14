@@ -7,6 +7,11 @@
 #ifndef LED2_H
 #define LED2_H
 
+#include <stdlib.h>
+#include <stdint.h>
+
+#include "main.h"
+
 /* Defined Types =========================================================================*/
 typedef enum led2_status_e{
     ON,

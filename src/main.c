@@ -14,10 +14,10 @@
 #include "stm32f334x8.h"
 
 /* Peripheral Files */
-#include "led2.c"
-#include "ringbuff.c"
-#include "tim2.c"
-#include "usart2.c"
+#include "led2.h"
+#include "ringbuff.h"
+#include "tim2.h"
+#include "usart2.h"
 
 
 
@@ -27,7 +27,11 @@
 
 
 /* Global Variables ======================================================================*/
-volatile uint32_t g_tick_count = 0;
+volatile uint32_t g_tick_count;
+
+ring_buff_t rxBuff;
+ring_buff_t txBuff;
+
 
 
 /* Function Prototypes ===================================================================*/
@@ -60,8 +64,10 @@ __attribute__((noreturn)) void main()
     LED2_init();
     TIM2_init();
     USART2_init();
-    RingBuff_init();
     
+    RingBuff_init(&txBuff);
+    RingBuff_init(&rxBuff);
+
     /* Main Loop */
     while (1)
     {

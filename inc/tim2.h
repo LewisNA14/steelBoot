@@ -8,10 +8,11 @@
 #include <stdlib.h>
 
 /* Extern Declarations */
-extern uint32t_t g_tick_count;
+
 
 /* Global Variables ======================================================================*/
-volatile uint32_t g_tick_count = 0;
+extern volatile uint32_t g_tick_count;
+
 
 /* Function Prototypes */
 void TIM2_init();

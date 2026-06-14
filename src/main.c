@@ -5,6 +5,7 @@
  */
 
 /* Includes ==============================================================================*/ 
+
 /* Standard Library*/
 #include <stdint.h>
 #include <stdlib.h>
@@ -19,30 +20,13 @@
 #include "tim2.h"
 #include "usart2.h"
 
-
-
 /* Defines ===============================================================================*/
-
-
-
 
 /* Global Variables ======================================================================*/
 volatile uint32_t g_tick_count;
 
 ring_buff_t rxBuff;
 ring_buff_t txBuff;
-
-
-
-/* Function Prototypes ===================================================================*/
-void gpio_set();
-
-/* Defined Types =========================================================================*/
-
-
-
-/* Defined Structs ======================================================================*/
-
 
 /* Functions ============================================================================*/
 /* TODO: Creation of a gpio_set function for the calling / handling of all current and future GPIOs*/

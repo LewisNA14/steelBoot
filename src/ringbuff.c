@@ -26,21 +26,24 @@ void RingBuff_init(ring_buff_t *Buff)
  */
 status_code_t RingBuff_Push(ring_buff_t *Buff, uint8_t Byte_in)
 {
-    /* First write to buffer */
-    Buff->buff[Buff->head] = Byte_in;
-    Buff->head = (Buff->head + 1) % RING_BUFF;
-    
+    status_code_t result; 
     /* Check if the ring buffer is full or has available space */ 
     if  (Buff->count == RING_BUFF)
     {
         Buff->tail = (Buff->tail + 1) % RING_BUFF;
-        return OVERWRITE;
+        result = OVERWRITE;
     }
     else 
     {
         Buff->count++;
+        result = DONE;
     }
-    return DONE;
+
+    /* First write to buffer */
+    Buff->buff[Buff->head] = Byte_in;
+    Buff->head = (Buff->head + 1) % RING_BUFF;
+
+    return result;
 }
 
 /**
@@ -48,18 +51,22 @@ status_code_t RingBuff_Push(ring_buff_t *Buff, uint8_t Byte_in)
  */
 status_code_t RingBuff_Pop(ring_buff_t *Buff, uint8_t *Byte_out)
 {
+    status_code_t result;
+
     // 1. Read the byte from the buffer to another array
     // 2. Ensure the tail doesn't exceed the heads position
-    if (Buff->tail == Buff->head)
+    if (Buff->count == 0)
     {
         // Return nothing since you'd be reading stale data
-        return ERROR;
+        result = ERROR;
     }
     else
     {
         *Byte_out         = Buff->buff[Buff->tail]; 
         Buff->tail        = (Buff->tail + 1) % RING_BUFF;
         Buff->count--;
+        
+        result = DONE;
     }
-    return DONE;
+    return result;
 }

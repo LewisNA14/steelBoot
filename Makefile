@@ -15,6 +15,7 @@ CMSIS_CORE_INC   = /home/lewisnicholson/STM32_base_CMSIS_package/CMSIS/ARM/inc
 
 INCLUDE_DIRS = -I./inc -I$(CMSIS_DEVICE_INC) -I$(CMSIS_DEVICE_SRC) -I$(CMSIS_CORE_INC)
 
+
 # Linker Script Flags
 LDFLAGS = -T STM32F334R8TX_FLASH.ld -Wl,--gc-sections -nostartfiles
 

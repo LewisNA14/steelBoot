@@ -51,37 +51,37 @@ void SysTick_Handler(void)      __attribute__((weak, alias("Default_Handler")));
 void Default_Handler(void); 
 
 /* Interrupts */
-void IRQ0_Handler()     __attribute__((weak, alias("Default_Handler")));            /* Interrupt 0 */            
-void IRQ1_Handler()     __attribute__((weak, alias("Default_Handler")));            /* Interrupt 1 */
-void IRQ2_Handler()     __attribute__((weak, alias("Default_Handler")));            /* Interrupt 2 */
-void IRQ3_Handler()     __attribute__((weak, alias("Default_Handler")));            /* Interrupt 3 */
-void IRQ4_Handler()     __attribute__((weak, alias("Default_Handler")));            /* Interrupt 4 */
-void IRQ5_Handler()     __attribute__((weak, alias("Default_Handler")));            /* Interrupt 5 */
-void IRQ6_Handler()     __attribute__((weak, alias("Default_Handler")));            /* Interrupt 6 */
-void IRQ7_Handler()     __attribute__((weak, alias("Default_Handler")));            /* Interrupt 7 */
-void IRQ8_Handler()     __attribute__((weak, alias("Default_Handler")));            /* Interrupt 8 */
-void IRQ9_Handler()     __attribute__((weak, alias("Default_Handler")));            /* Interrupt 9 */
-void IRQ10_Handler()    __attribute__((weak, alias("Default_Handler")));            /* Interrupt 10 */
-void IRQ11_Handler()    __attribute__((weak, alias("Default_Handler")));            /* Interrupt 11 */
-void IRQ12_Handler()    __attribute__((weak, alias("Default_Handler")));            /* Interrupt 12 */
-void IRQ13_Handler()    __attribute__((weak, alias("Default_Handler")));            /* Interrupt 13 */
-void IRQ14_Handler()    __attribute__((weak, alias("Default_Handler")));            /* Interrupt 14 */
-void IRQ15_Handler()    __attribute__((weak, alias("Default_Handler")));            /* Interrupt 15 */
-void IRQ16_Handler()    __attribute__((weak, alias("Default_Handler")));            /* Interrupt 16 */
-void IRQ17_Handler()    __attribute__((weak, alias("Default_Handler")));            /* Interrupt 17 */
-void IRQ18_Handler()    __attribute__((weak, alias("Default_Handler")));            /* Interrupt 18 */
-void IRQ19_Handler()    __attribute__((weak, alias("Default_Handler")));            /* Interrupt 19 */
-void IRQ20_Handler()    __attribute__((weak, alias("Default_Handler")));            /* Interrupt 20 */
-void IRQ21_Handler()    __attribute__((weak, alias("Default_Handler")));            /* Interrupt 21 */
-void IRQ22_Handler()    __attribute__((weak, alias("Default_Handler")));            /* Interrupt 22 */
-void IRQ23_Handler()    __attribute__((weak, alias("Default_Handler")));            /* Interrupt 23 */
-void IRQ24_Handler()    __attribute__((weak, alias("Default_Handler")));            /* Interrupt 24 */
-void IRQ25_Handler()    __attribute__((weak, alias("Default_Handler")));            /* Interrupt 25 */
-void IRQ26_Handler()    __attribute__((weak, alias("Default_Handler")));            /* Interrupt 26 */
-void IRQ27_Handler()    __attribute__((weak, alias("Default_Handler")));            /* Interrupt 27 */
+void IRQ0_Handler()         __attribute__((weak, alias("Default_Handler")));            /* Interrupt 0 */            
+void IRQ1_Handler()         __attribute__((weak, alias("Default_Handler")));            /* Interrupt 1 */
+void IRQ2_Handler()         __attribute__((weak, alias("Default_Handler")));            /* Interrupt 2 */
+void IRQ3_Handler()         __attribute__((weak, alias("Default_Handler")));            /* Interrupt 3 */
+void IRQ4_Handler()         __attribute__((weak, alias("Default_Handler")));            /* Interrupt 4 */
+void IRQ5_Handler()         __attribute__((weak, alias("Default_Handler")));            /* Interrupt 5 */
+void IRQ6_Handler()         __attribute__((weak, alias("Default_Handler")));            /* Interrupt 6 */
+void IRQ7_Handler()         __attribute__((weak, alias("Default_Handler")));            /* Interrupt 7 */
+void IRQ8_Handler()         __attribute__((weak, alias("Default_Handler")));            /* Interrupt 8 */
+void IRQ9_Handler()         __attribute__((weak, alias("Default_Handler")));            /* Interrupt 9 */
+void IRQ10_Handler()        __attribute__((weak, alias("Default_Handler")));            /* Interrupt 10 */
+void IRQ11_Handler()        __attribute__((weak, alias("Default_Handler")));            /* Interrupt 11 */
+void IRQ12_Handler()        __attribute__((weak, alias("Default_Handler")));            /* Interrupt 12 */
+void IRQ13_Handler()        __attribute__((weak, alias("Default_Handler")));            /* Interrupt 13 */
+void IRQ14_Handler()        __attribute__((weak, alias("Default_Handler")));            /* Interrupt 14 */
+void IRQ15_Handler()        __attribute__((weak, alias("Default_Handler")));            /* Interrupt 15 */
+void IRQ16_Handler()        __attribute__((weak, alias("Default_Handler")));            /* Interrupt 16 */
+void IRQ17_Handler()        __attribute__((weak, alias("Default_Handler")));            /* Interrupt 17 */
+void IRQ18_Handler()        __attribute__((weak, alias("Default_Handler")));            /* Interrupt 18 */
+void IRQ19_Handler()        __attribute__((weak, alias("Default_Handler")));            /* Interrupt 19 */
+void IRQ20_Handler()        __attribute__((weak, alias("Default_Handler")));            /* Interrupt 20 */
+void IRQ21_Handler()        __attribute__((weak, alias("Default_Handler")));            /* Interrupt 21 */
+void IRQ22_Handler()        __attribute__((weak, alias("Default_Handler")));            /* Interrupt 22 */
+void IRQ23_Handler()        __attribute__((weak, alias("Default_Handler")));            /* Interrupt 23 */
+void IRQ24_Handler()        __attribute__((weak, alias("Default_Handler")));            /* Interrupt 24 */
+void IRQ25_Handler()        __attribute__((weak, alias("Default_Handler")));            /* Interrupt 25 */
+void IRQ26_Handler()        __attribute__((weak, alias("Default_Handler")));            /* Interrupt 26 */
+void IRQ27_Handler()        __attribute__((weak, alias("Default_Handler")));            /* Interrupt 27 */
 
-void TIM2_IRQHandler()  __attribute__((weak, alias("Default_Handler")));            /* Interrupt 28, TIM2 Global Interrupt*/
-    
+void TIM2_IRQHandler()      __attribute__((weak, alias("Default_Handler")));            /* Interrupt 28, TIM2 Global Interrupt*/
+void USART2_IRQHandler()    __attribute__((weak, alias("Default_Handler")));            /* Interrupt 38, USART2 Global Interrupt*/
 /*=============================================================================================*/
 /**
  * @section Vector Tables
@@ -144,8 +144,18 @@ const vector_table_t vector_table[255] = {
     IRQ26_Handler,                  /* Interrupt 26 */
     IRQ27_Handler,                  /* Interrupt 27 */
 
-    TIM2_IRQHandler,                   /* Interrupt 28, TIM2 Clock Global Interrupt */
+    TIM2_IRQHandler,                /* Interrupt 28, TIM2 Clock Global Interrupt */
+    0,                              /* Interrupt 29 */
+    0,                              /* Interrupt 30 */
+    0,                              /* Interrupt 31 */
+    0,                              /* Interrupt 32 */
+    0,                              /* Interrupt 33 */
+    0,                              /* Interrupt 34 */
+    0,                              /* Interrupt 35 */
+    0,                              /* Interrupt 36 */
+    0,                              /* Interrupt 37 */
 
+    USART2_IRQHandler               /* Interrupt 38, USART2 Global Interrupt*/
     // The number of interrupts goes up to IRQ 239 However I don't think we actually need that many for now
 };
 

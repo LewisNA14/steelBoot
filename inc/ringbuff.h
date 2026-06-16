@@ -34,7 +34,7 @@ extern ring_buff_t rxBuff;
 /* Function Prototypes */
 void RingBuff_init(ring_buff_t *Buff);
 
-status_code_t RingBuff_Push(ring_buff_t *Buff, uint8_t Byte_in);
-status_code_t RingBuff_Pop(ring_buff_t *Buff, uint8_t *Byte_out);
+status_code_t RingBuff_Push (ring_buff_t *Buff,  uint8_t Byte_in);
+status_code_t RingBuff_Pop  (ring_buff_t *Buff,  uint8_t *Byte_out);
 
 #endif // RINGBUFF_H

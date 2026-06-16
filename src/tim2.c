@@ -21,15 +21,24 @@ void TIM2_init()
 /* Timer Function (TIM2) */
 void TIM2_IRQHandler()
 {
+    // TODO: Implement state handling
+    status_code_t result;
+
+    /* Status Register and Update Interrupt Flag are enabled */
     if (TIM2->SR & TIM_SR_UIF)
     {
-        TIM2->SR &= ~(TIM_SR_UIF);       // Clearing the interrupt Flag
+        TIM2->SR &= ~(TIM_SR_UIF);          // Clearing the interrupt Flag
         
         g_tick_count++;
+        if((g_tick_count % 2) == 0)
+        {
+            USART2_read();                  // Read every 2 seconds
+        }
         if((g_tick_count % 5) == 0)
         {
             LED2_update();
             USART2_string("Tick Update!\r\n");
+            USART2_print();
         }
     }
     

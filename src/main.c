@@ -22,6 +22,7 @@
 
 /* Defines ===============================================================================*/
 
+
 /* Global Variables ======================================================================*/
 volatile uint32_t g_tick_count;
 
@@ -33,9 +34,8 @@ ring_buff_t txBuff;
 /* void gpio_set()
 {
     LED2_init();        TIM2->SR &= ~(TIM_SR_UIF);       // Clearing the interrupt Flag
-
 }
- */
+*/
 
 /**
  * @brief Main Program Loop
@@ -43,7 +43,7 @@ ring_buff_t txBuff;
 __attribute__((noreturn)) void main() 
 {
     /* RCC Peripheral Enabling / Initialisation */
-    RCC->AHBENR     |= RCC_AHBENR_GPIOAEN;                      // Enable Clock for GPIOA EN
+    RCC->AHBENR     |= RCC_AHBENR_GPIOAEN;              // Enable Clock for GPIOA EN
 
     LED2_init();
     TIM2_init();

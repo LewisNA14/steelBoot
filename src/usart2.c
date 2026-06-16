@@ -33,48 +33,66 @@ void USART2_init(void)
     USART2->BRR = 69;                                               /* Set baud rate to 115200 with an 8MHz peripheral clock */
 
     // Enabling Transmit, Receiver, and the USART periph itself
+    USART2->CR1 |= USART_CR1_RXNEIE;                /* Enables the Receiver Interrupt */
     USART2->CR1 |= (USART_CR1_TE | USART_CR1_RE );
     USART2->CR1 |= USART_CR1_UE;
+
+    NVIC_EnableIRQ(USART2_IRQn);                                  // Enables interrupt within NVIC
 }
 
 /* USART Tx Functions =====================================================================*/
-void USART2_write(char c)
+
+/* Input from software */
+void USART2_write(uint8_t c)
 {
-    while(!(USART2->ISR & USART_ISR_TXE))
-    {
-        /* Wait until the Transmit Data Register is empty (TXE) */
-    }
-    USART2->TDR = (uint8_t)c;    
+    status_code_t result;
+    result = RingBuff_Push(&txBuff, c);
 }
 
-void USART2_string(const char* str)
+void USART2_string(const char* str_in)
 {
-    while(*str)
+    while(*str_in)
     {
-        USART2_write(*str++);
+        USART2_write(*str_in++);
     }
-    while (!(USART2->ISR & USART_ISR_TC)) 
+}
+
+/* Output to Tx Register */
+void USART2_print()
+{
+    status_code_t result;
+
+    uint8_t c_out = 0;
+    
+    // Pull the character string from the array
+    while(txBuff.count != 0)
     {
-        // Block until the final bit (stop bit) has cleared the shift register
+        while (!(USART2->ISR & USART_ISR_TXE))
+        {
+            /* Wait until the Transmit Data Register (TXE) empty */
+        }
+        /* Push the byte into the Tx Ring Buffer */
+        result = RingBuff_Pop(&txBuff, &c_out);
+        USART2->TDR = (uint8_t)c_out;
     }
-    // TODO: Implememnt the Tx Ring Buffer.
+    
 }
 
 /* USART2 Rx Functions ====================================================================*/
-char USART2_read(status_code_t *state, ring_buff_t *rxBuff)
+char USART2_read(status_code_t *result, ring_buff_t *rxBuff)
 {
     // TODO: use the Rx_Ring_Buff    
     uint8_t rxByte_out = 0;
     char rx_arr[256];
     int i = 0;
 
-    *state = RingBuff_Pop(rxBuff, &rxByte_out);
-    if (*state == ERROR)
+    *result = RingBuff_Pop(rxBuff, &rxByte_out);
+    if (*result == ERROR)
     {
         /* TODO: Add error handling and functions for such operations */
         // Default_Handler();
     }
-    else if ((*state == DONE) || (*state == OVERWRITE))
+    else if ((*result == DONE) || (*result == OVERWRITE))
     {
         while(rxByte_out != '\r')
         {
@@ -84,33 +102,16 @@ char USART2_read(status_code_t *state, ring_buff_t *rxBuff)
     }
 }
 
-/* USART IRQ Handlers ==========================================================================*/
-void USART_RX_ISR()
+/* USART IRQ Handler ==========================================================================*/
+void USART2_IRQHandler()
 {
-
+    /* Rx Interrupt Service Request */
+    while(USART2->ISR & USART_ISR_RXNE)      // Check that the data register is not empty and the usart interrupt is triggered
+    {
+        // 2. Assign the RDR value to a variable
+        uint8_t r = (uint8_t)USART2->RDR;
+        // 3. Read the bytes into the Rx Ring Buffer
+        RingBuff_Push(&rxBuff, r); 
+    } 
 }
-
-void USART_TX_ISR()
-{
-
-}
-
 // TODO: UART / USB Serial Connection Test Function
-
-
-/**
- * 
- * void USART2_IRQHandler()
- * {
- *      char* string; 
- *      if (USART_CR1_TXEIE)
- *      {
- *          TxBuff_Push(txByte);
- *          string = TxBuff_Pop();
- *          USART2_write("Transmit Data Register is empty!");
- *      }
- *      if (USART_CR1_RXENIE)
- *      {
- *          RxBuff_Push(rxByte);
- *      }
- */

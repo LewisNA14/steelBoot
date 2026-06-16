@@ -19,8 +19,12 @@
 
  /* Function Prototypes */
 void USART2_init();
+
 void USART2_write(char c);
 void USART2_string(const char* str);
+
+void USART2_print();
+
 void USART2_read();
 
 #endif // USART2_H

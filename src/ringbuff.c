@@ -30,8 +30,8 @@ status_code_t RingBuff_Push(ring_buff_t *Buff, uint8_t Byte_in)
     /* Check if the ring buffer is full or has available space */ 
     if  (Buff->count == RING_BUFF)
     {
-        Buff->tail = (Buff->tail + 1) % RING_BUFF;
-        result = OVERWRITE;
+        Buff->tail  = (Buff->tail + 1) % RING_BUFF;
+        result      = OVERWRITE;
     }
     else 
     {
@@ -40,8 +40,8 @@ status_code_t RingBuff_Push(ring_buff_t *Buff, uint8_t Byte_in)
     }
 
     /* First write to buffer */
-    Buff->buff[Buff->head] = Byte_in;
-    Buff->head = (Buff->head + 1) % RING_BUFF;
+    Buff->buff[Buff->head]  = Byte_in;
+    Buff->head              = (Buff->head + 1) % RING_BUFF;
 
     return result;
 }

@@ -5,8 +5,10 @@
 CC 		= arm-none-eabi-gcc												# ARM Toolchain Compiler
 CCOPY   = arm-none-eabi-objcopy											# Toolchain for copying / converting
 CFLAGS 	= -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 	# Hardware peripheral / Compiler flags
-OBJ 	= startup.o led2.o main.o ringbuff.o tim2.o usart2.o
-TARGET 	= firmware
+OUT_DIR = output
+OBJ_NAMES = startup.o led2.o main.o ringbuff.o tim2.o usart2.o
+OBJ 	= $(addprefix $(OUT_DIR)/, $(OBJ_NAMES))
+TARGET 	= $(OUT_DIR)/firmware
 
 # Include Libraries
 CMSIS_DEVICE_INC = /home/lewisnicholson/STM32_base_CMSIS_package/CMSIS/STM32F3xx/inc
@@ -22,6 +24,10 @@ LDFLAGS = -T STM32F334R8TX_FLASH.ld -Wl,--gc-sections -nostartfiles
 # Default Rule:
 all : $(TARGET).hex
 
+# Create the output directory
+$(OUT_DIR):
+	@mkdir -p $@
+
 # Linker Script Rule for creating ELF
 $(TARGET).elf: $(OBJ)
 	@echo "  LINK    $@"
@@ -32,11 +38,13 @@ $(TARGET).hex: $(TARGET).elf
 	@echo "  OBJCOPY $@"
 	@$(CCOPY) -O ihex $< $@
 
-# Compiler rule (using pattern rule)
-%.o: src/%.c 
-	@echo " CC		$<"
-	@$(CC) $(CFLAGS) $(INCLUDE_DIRS) -c $< -o $@
 
+vpath %.c src .
+
+# Compiler rule (using pattern rule)
+$(OUT_DIR)/%.o: %.c | $(OUT_DIR)
+	@echo "  CC      $<"
+	@$(CC) $(CFLAGS) $(INCLUDE_DIRS) -c $< -o $@
 
 check-sections:
 	arm-none-eabi-readelf -S $(TARGET).elf
@@ -45,5 +53,7 @@ check-program:
 	arm-none-eabi-readelf -l $(TARGET).elf
 
 clean:
-	rm -f $(OBJ) $(TARGET).elf $(TARGET).hex
+	rm -rf $(OUT_DIR)
 
+flash: $(TARGET).hex
+	st-flash --connect-under-reset --format ihex write $<

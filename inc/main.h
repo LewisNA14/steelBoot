@@ -11,13 +11,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-/* Type Defines*/
-typedef enum status_code_e{
-    DONE        = 0,        
-    BUSY        = 1,        
-    OVERWRITE   = 2,        
-    ERROR       = 3         
-}status_code_t;
+#include "status.h"
 
 /* Function Prototypes */
 __attribute__((noreturn)) void main();

@@ -7,14 +7,13 @@
 #ifndef RINGBUFF_H
 #define RINGBUFF_H
 
-/* Includes */
+/*===Includes=====*/
 
-/* Standard Library */
-#include <stdlib.h>
+/*----Standard Library----*/
 #include <stdint.h>
 
 
-#include "main.h"
+#include "status.h"
 
 /* Defines */
 #define RING_BUFF 256

@@ -7,8 +7,8 @@
 
 /* Includes */
 #include "ringbuff.h"
-#include "main.h"
-#include "stm32f334x8.h"
+
+
 
 /* Defines */
 

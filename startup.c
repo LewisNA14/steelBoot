@@ -180,7 +180,7 @@ void Reset_Handler()
     uint32_t bssSize    = &_BSS_END - &_BSS_START; 
 
     /* Source Address for .data copy in Flash */
-    uint32_t *pSrc = &_DATA_LOAD;
+    uint32_t *pSrc      = &_DATA_LOAD;
 
     // Overwrite current .data values with ones copied from .text
     for (uint32_t i = 0; i < dataSize; i++)

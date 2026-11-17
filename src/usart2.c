@@ -9,7 +9,7 @@
 #include "ringbuff.h"
 
 
-/* Functions */
+/* Initialisation Functions ============================================================ */
 void USART2_init(void)
 {
     // Tx is Pin PA2 & Rx is Pin PA3
@@ -29,11 +29,11 @@ void USART2_init(void)
     USART2->BRR = 69;                                               /* Set baud rate to 115200 with an 8MHz peripheral clock */
 
     // Enabling Transmit, Receiver, and the USART periph itself
-    USART2->CR1 |= USART_CR1_RXNEIE;                /* Enables the Receiver Interrupt */
+    USART2->CR1 |= USART_CR1_RXNEIE;                                /* Enables the Receiver Interrupt */
     USART2->CR1 |= (USART_CR1_TE | USART_CR1_RE );
     USART2->CR1 |= USART_CR1_UE;
 
-    NVIC_EnableIRQ(USART2_IRQn);                                  // Enables interrupt within NVIC
+    NVIC_EnableIRQ(USART2_IRQn);                                    // Enables interrupt within NVIC
 }
 
 /* USART Tx Functions =====================================================================*/
@@ -74,13 +74,15 @@ void USART2_print()
     
 }
 
-/* USART2 Rx Functions ====================================================================*/
+/************************************
+ * @section :   USART2 Rx Functions
+ ************************************/
 char USART2_read(status_code_t *result, ring_buff_t *rxBuff)
 {
     // TODO: use the Rx_Ring_Buff    
-    uint8_t rxByte_out = 0;
-    char rx_arr[256];
-    int i = 0;
+    uint8_t rxByte_out = 0;         // Output from the rxBuff
+    int8_t  rx_arr[256];            // The array for storing the output from rxBuff 
+    int i = 0;                      // Indexing Variable
 
     *result = RingBuff_Pop(rxBuff, &rxByte_out);
     if (*result == ERROR)
@@ -90,7 +92,7 @@ char USART2_read(status_code_t *result, ring_buff_t *rxBuff)
     }
     else if ((*result == DONE) || (*result == OVERWRITE))
     {
-        while(rxByte_out != '\r')
+        while(rxByte_out != '\0')
         {
             rx_arr[i] = rxByte_out;
             i++;

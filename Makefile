@@ -57,3 +57,9 @@ clean:
 
 flash: $(TARGET).hex
 	st-flash --connect-under-reset --format ihex write $<
+
+tests: 
+	$(MAKE) -C test
+
+# tests clean:
+# 	rm -rf 
